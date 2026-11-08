@@ -17,6 +17,7 @@
   button { background: var(--pri); color: #fff; }
   button.done { background: var(--ok); }
   a.btn { margin-top: 12px; background: transparent; color: var(--pri); border: 2px solid var(--pri); }
+  a.btn.moppy { border-color: #f59e0b; color: #f59e0b; }
   .muted { color: var(--muted); font-size: 13px; margin-top: 16px; text-align: center; }
 </style>
 </head>
@@ -26,15 +27,17 @@
     <p id="t"></p>
     <button id="c">コピー</button>
     <a id="u" class="btn" hidden>商品ページを開く</a>
+    <a id="mp" class="btn moppy" hidden>モッピーを開く</a>
   </div>
   <p class="muted" id="m">コピーしたら、ショッピングのアプリの検索欄に貼り付けてください。</p>
 </main>
 <script>
   // 商品名とリンクは「#」の後ろにだけ入っている（サーバーには送られない）
   const h = new URLSearchParams(location.hash.slice(1));
-  const t = h.get('t') || '', u = h.get('u') || '';
+  const t = h.get('t') || '', u = h.get('u') || '', mp = h.get('m') || '';
   document.getElementById('t').textContent = t || '（商品名がありません）';
   if (/^https:\/\//.test(u)) { const a = document.getElementById('u'); a.href = u; a.hidden = false; }
+  if (/^https:\/\/([a-z0-9-]+\.)*moppy\.jp\//.test(mp)) { const a = document.getElementById('mp'); a.href = mp; a.hidden = false; } // モッピーのリンクだけ
   const c = document.getElementById('c');
   if (!t) c.disabled = true;
   c.onclick = async () => {
