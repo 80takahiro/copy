@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>コピー</title>
+<style>
+  :root { --bg: #f5f6f8; --card: #fff; --text: #1a1d23; --muted: #6b7280; --pri: #2563eb; --ok: #16a34a; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111318; --card: #1c1f26; --text: #e8eaee; --muted: #9aa1ad; --pri: #3b82f6; --ok: #22c55e; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 24px 16px; }
+  .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+  #t { font-size: 18px; font-weight: 700; word-break: break-all; margin: 0 0 20px; user-select: all; -webkit-user-select: all; }
+  button, a.btn { display: block; width: 100%; padding: 16px; border: 0; border-radius: 12px; font: inherit; font-size: 18px; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; }
+  button { background: var(--pri); color: #fff; }
+  button.done { background: var(--ok); }
+  a.btn { margin-top: 12px; background: transparent; color: var(--pri); border: 2px solid var(--pri); }
+  .muted { color: var(--muted); font-size: 13px; margin-top: 16px; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <p id="t"></p>
+    <button id="c">コピー</button>
+    <a id="u" class="btn" hidden>商品ページを開く</a>
+  </div>
+  <p class="muted" id="m">コピーしたら、ショッピングのアプリの検索欄に貼り付けてください。</p>
+</main>
+<script>
+  // 商品名とリンクは「#」の後ろにだけ入っている（サーバーには送られない）
+  const h = new URLSearchParams(location.hash.slice(1));
+  const t = h.get('t') || '', u = h.get('u') || '';
+  document.getElementById('t').textContent = t || '（商品名がありません）';
+  if (/^https:\/\//.test(u)) { const a = document.getElementById('u'); a.href = u; a.hidden = false; }
+  const c = document.getElementById('c');
+  if (!t) c.disabled = true;
+  c.onclick = async () => {
+    let ok = false;
+    try { await navigator.clipboard.writeText(t); ok = true; } catch {}
+    if (!ok) { // 古い端末向け
+      const ta = document.createElement('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
+      try { ok = document.execCommand('copy'); } catch {}
+      ta.remove();
+    }
+    c.textContent = ok ? '✓ コピーしました' : 'コピーできませんでした（上の文字を長押ししてコピー）';
+    c.classList.toggle('done', ok);
+  };
+</script>
+</body>
+</html>
