@@ -37,7 +37,13 @@
   const t = h.get('t') || '', u = h.get('u') || '', mp = h.get('m') || '';
   document.getElementById('t').textContent = t || '（商品名がありません）';
   if (/^https:\/\//.test(u)) { const a = document.getElementById('u'); a.href = u; a.hidden = false; }
-  if (/^https:\/\/([a-z0-9-]+\.)*moppy\.jp\//.test(mp)) { const a = document.getElementById('mp'); a.href = mp; a.hidden = false; } // モッピーのリンクだけ
+  // モッピーのリンクだけ。広告ページ（site_id 付き）は、iPhone でアプリが開く形（ユニバーサルリンク）に直す
+  if (/^https:\/\/([a-z0-9-]+\.)*moppy\.jp\//.test(mp)) {
+    let href = mp;
+    const sid = new URL(mp).searchParams.get('site_id');
+    if (sid) href = 'https://pc.moppy.jp/appli_native/safari_extension/detail.php?' + new URLSearchParams({ site_id: sid, track_ref: 'copy' });
+    const a = document.getElementById('mp'); a.href = href; a.hidden = false;
+  }
   const c = document.getElementById('c');
   if (!t) c.disabled = true;
   c.onclick = async () => {
