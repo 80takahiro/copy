@@ -39,9 +39,9 @@
   if (/^https:\/\//.test(u)) { const a = document.getElementById('u'); a.href = u; a.hidden = false; }
   // モッピーのリンクだけ。広告ページ（site_id 付き）は、iPhone でアプリが開く形（ユニバーサルリンク）に直す
   if (/^https:\/\/([a-z0-9-]+\.)*moppy\.jp\//.test(mp)) {
-    let href = mp;
-    const sid = new URL(mp).searchParams.get('site_id');
-    if (sid) href = 'https://pc.moppy.jp/appli_native/safari_extension/detail.php?' + new URLSearchParams({ site_id: sid, track_ref: 'copy' });
+    // 広告番号が無ければ 0（アプリを起動するだけ）。アプリで開く形はこのアドレスしか無い
+    const sid = new URL(mp).searchParams.get('site_id') || '0';
+    const href = 'https://pc.moppy.jp/appli_native/safari_extension/detail.php?' + new URLSearchParams({ site_id: sid, track_ref: 'copy' });
     const a = document.getElementById('mp'); a.href = href; a.hidden = false;
   }
   const c = document.getElementById('c');
